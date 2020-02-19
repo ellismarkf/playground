@@ -33,7 +33,7 @@ function Calendar(props) {
   return (
     <React.Fragment>
       <input type="date" value={inputString} />
-      <div>
+      <div class="calendar-container">
         {days.map((cell, index) => (
           <span className={index + 1 === day ? 'today' : ''}>{index + 1}</span>
         ))}

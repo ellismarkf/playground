@@ -13,13 +13,13 @@ export const oct =  9
 export const nov =  10
 export const dec =  11
 
-export const mon = 0
-export const tue = 1
-export const wed = 2
-export const thu = 3
-export const fri = 4
-export const sat = 5
-export const sun = 6
+export const sun = 0
+export const mon = 1
+export const tue = 2
+export const wed = 3
+export const thu = 4
+export const fri = 5
+export const sat = 6
 
 export const months = {
   [jan]: { index: 0, label: 'January'},
@@ -37,13 +37,13 @@ export const months = {
 }
 
 export const weekdays = {
-  [mon]: {label: 'Monday', index: 0},
-  [tue]: {label: 'Tuesday', index: 1},
-  [wed]: {label: 'Wednesday', index: 2},
-  [thu]: {label: 'Thursday', index: 3},
-  [fri]: {label: 'Friday', index: 4},
-  [sat]: {label: 'Saturday', index: 5},
-  [sun]: {label: 'Sunday', index: 6},
+  [sun]: {label: 'Sunday', index: 0},
+  [mon]: {label: 'Monday', index: 1},
+  [tue]: {label: 'Tuesday', index: 2},
+  [wed]: {label: 'Wednesday', index: 3},
+  [thu]: {label: 'Thursday', index: 4},
+  [fri]: {label: 'Friday', index: 5},
+  [sat]: {label: 'Saturday', index: 6},
 }
 
 
@@ -81,8 +81,6 @@ function getDaysInMonth(month, year) {
   }
 }
 
-window.checkLeapYear = checkLeapYear
-
 function toInputString(date) {
   let year = date.getFullYear()
   let month = date.getMonth() + 1
@@ -100,7 +98,7 @@ function getDateComponents(date) {
   let day = date.getDate()
   let dayOfWweek = date.getDay()
   let todayCopy = new Date()
-  let firstDayOfMonth = new Date(todayCopy.setDate(0)).getDay()
+  let firstDayOfMonth = new Date(todayCopy.setDate(1)).getDay()
   return {
     inputString: toInputString(date),
     year,
