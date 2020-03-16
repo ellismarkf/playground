@@ -17,8 +17,23 @@ function getFullMonth(daysInMonth) {
   }
 }
 
+function positionDays(firstDayOfMonth, daysInMonth) {
+  const grid = new Array(35).fill(0)
+  let day = firstDayOfMonth
+  let dayDiff = 0
+  return grid.map((_, index) => {
+    if (index < day) {
+      dayDiff++
+      return ''
+    }
+    if (index >= daysInMonth + dayDiff) return ''
+    return `${(index + 1) - dayDiff}`
+  })
+}
+
 function Calendar(props) {
   let {
+    date,
     inputString,
     year,
     day,
@@ -26,17 +41,52 @@ function Calendar(props) {
     firstDayOfMonth,
     month,
     daysInMonth,
-    today
+    today,
+    setDate,
+    selectedDate,
+    setSelectedDate
   } = props
-  const days = new Array(daysInMonth).fill(0)
-  const weekRowCount = Math.ceil(daysInMonth / 7)
+  const grid = positionDays(firstDayOfMonth, daysInMonth)
   return (
     <React.Fragment>
       <input type="date" value={inputString} />
-      <div class="calendar-container">
-        {days.map((cell, index) => (
-          <span className={index + 1 === day ? 'today' : ''}>{index + 1}</span>
-        ))}
+      <div className="calendar-container">
+        <p>{months[month].label} {year}</p>
+        <div className="day-grid">
+          {grid.map((d, index) => {
+            return (
+              <span onClick={e => {
+                if (d) {
+                  const draftDate = new Date(date)
+                  draftDate.setDate(d)
+                  setSelectedDate(draftDate)
+                }
+
+              }} key={index} className={Number(d) === selectedDate.getDate() ? 'today' : ''}>
+                {d}
+              </span>
+            )}
+          )}
+        </div>
+        <button
+          onClick={e => {
+            const newDate = new Date(today)
+            newDate.setMonth(newDate.getMonth() - 1)
+            setDate(newDate)
+          }}
+        >
+          {'<-'}
+        </button>
+        <button
+          onClick={e => {
+            const newDate = new Date(today)
+            newDate.setMonth(newDate.getMonth() + 1)
+            console.log(newDate)
+            setDate(newDate)
+          }}
+        >
+          {'->'}
+        </button>
       </div>
       <Debug firstDayOfMonth={firstDayOfMonth} firstWeekdayOfMonth={weekdays[firstDayOfMonth].label} />
     </React.Fragment>

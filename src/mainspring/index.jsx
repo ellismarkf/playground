@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 export const jan =  0
 export const feb =  1
@@ -96,26 +96,33 @@ function getDateComponents(date) {
   let year = date.getFullYear()
   let month = date.getMonth()
   let day = date.getDate()
-  let dayOfWweek = date.getDay()
-  let todayCopy = new Date()
-  let firstDayOfMonth = new Date(todayCopy.setDate(1)).getDay()
+  let dayOfWeek = date.getDay()
+  let draftDate = new Date(date)
+  let firstDayOfMonth = new Date(draftDate.setDate(1))
   return {
     inputString: toInputString(date),
     year,
     day,
-    firstDayOfMonth,
-    dayOfWweek,
+    firstDayOfMonth: firstDayOfMonth.getDay(),
+    dayOfWeek,
     month,
     daysInMonth: getDaysInMonth(month, year),
-    today: date
+    today: date,
+    date
   }
 }
 
 function Mainspring(props) {
-  let today = new Date()
+  const [date, setDate] = useState(new Date())
+  const [selectedDate, setSelectedDate] = useState(new Date())
   return (
     <React.Fragment>
-      {props.children(getDateComponents(today))}
+      {props.children({
+        ...getDateComponents(date),
+        setDate,
+        selectedDate,
+        setSelectedDate
+      })}
     </React.Fragment>
   )
 }

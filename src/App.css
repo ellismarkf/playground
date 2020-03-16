@@ -24,6 +24,32 @@
   color: #61dafb;
 }
 
+.calendar-container {
+  width: 148px;
+}
+
+.day-grid {
+  border-right: 1px solid;
+  border-bottom: 1px solid;
+  display: inline-flex;
+  flex-wrap: wrap;
+}
+
+.day-grid span {
+  width: 20px;
+  height: 20px;
+  border-top: 1px solid;
+  border-left: 1px solid;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+}
+
+.day-grid span:hover {
+  background-color: lightblue;
+}
+
 .today {
   font-weight: bold;
 }
