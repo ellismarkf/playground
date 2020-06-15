@@ -1,5 +1,5 @@
 import React from 'react';
-import Mainspring, { months, weekdays } from './mainspring'
+import Daystream, { getDaysInMonth, toInputString, getSixWeekView } from './daystream'
 import './App.css';
 
 const Debug = props => (
@@ -10,85 +10,185 @@ const Debug = props => (
   </code>
 )
 
-function getFullMonth(daysInMonth) {
-  let month = []
-  for (let i = 0; i <= daysInMonth; i++) {
+function SixWeekView(props) {
+  let {
+    date,
+    month,
+    selectedDate,
+    setDate,
+    setSelectedDate
+  } = props
+  const { days, overflow } = getSixWeekView(
+    month.totalDays,
+    getDaysInMonth(month.index - 1),
+    month.firstDayIndex
+  )
+  return (
+    <div className="calendar-container">
+      <p>{month.label} {month.year}</p>
+      <div className="day-grid">
+        {overflow.prev.map((d, index) => (
+          <span
+            onClick={() => {
+              const draftDate = new Date(date)
+              draftDate.setDate(d)
+              draftDate.setMonth(date.getMonth() - 1)
+              setDate(draftDate)
+              setSelectedDate(draftDate)
+            }}
+            key={index}
+            className={` out-of-bounds`}>
+            {d}
+          </span>
+        ))}
+        {days.map((d, index) => {
+          const isSelectedDate = d === selectedDate.getDate() && month.index === selectedDate.getMonth() && month.year === selectedDate.getFullYear()
+          return (
+            <span
+              onClick={() => {
+                const draftDate = new Date(date)
+                draftDate.setDate(d)
+                setDate(draftDate)
+                setSelectedDate(draftDate)
+              }}
+              key={index}
+              className={`${isSelectedDate ? 'today' : ''}`}
+            >
+              {d}
+            </span>
+          )
+        }
+        )}
+        {overflow.next.map((d, index) => (
+          <span
+            key={index}
+            className={`out-of-bounds`}
+            onClick={() => {
+              const draftDate = new Date(date)
+              draftDate.setDate(d)
+              draftDate.setMonth(date.getMonth() + 1)
+              setDate(draftDate)
+              setSelectedDate(draftDate)
+            }}
+          >
+            {d}
+          </span>
+        ))}
+      </div>
+    </div>
+  )
+}
 
+function getMonthDate(date, month) {
+  const draft = new Date(date)
+  switch ((date.getMonth() - month)) {
+    case -1: return draft.setMonth(date.getMonth() + 1)
+    case 1: return draft.setMonth(date.getMonth() - 1)
+    default: return date
   }
 }
 
-function positionDays(firstDayOfMonth, daysInMonth) {
-  const grid = new Array(35).fill(0)
-  let day = firstDayOfMonth
-  let dayDiff = 0
-  return grid.map((_, index) => {
-    if (index < day) {
-      dayDiff++
-      return ''
-    }
-    if (index >= daysInMonth + dayDiff) return ''
-    return `${(index + 1) - dayDiff}`
-  })
-}
-
+/**
+ * 
+ * @param {import('./daystream').DaystreamProps} props 
+ */
 function Calendar(props) {
   let {
     date,
-    inputString,
-    year,
-    day,
-    dayOfWeek,
-    firstDayOfMonth,
-    month,
-    daysInMonth,
-    today,
     setDate,
     selectedDate,
-    setSelectedDate
+    setSelectedDate,
+    currentMonth,
+    setNextMonth,
+    setNextYear,
+    setPreviousMonth,
+    setPreviousYear,
+    setToday,
+    checkDaySelected,
+    checkWithinRange
   } = props
-  const grid = positionDays(firstDayOfMonth, daysInMonth)
+  const { days, overflow } = getSixWeekView(
+    currentMonth.totalDays,
+    getDaysInMonth(currentMonth.index - 1),
+    currentMonth.firstDayIndex
+  )
+  const months = [
+    currentMonth
+  ]
+
   return (
     <React.Fragment>
-      <input type="date" value={inputString} />
-      <div className="calendar-container">
-        <p>{months[month].label} {year}</p>
-        <div className="day-grid">
-          {grid.map((d, index) => {
-            return (
-              <span onClick={e => {
-                if (d) {
+      <input type="date" value={toInputString(selectedDate)} />
+      <div className="months-container">
+        <div className="calendar-container">
+          <p>{currentMonth.label} {currentMonth.year}</p>
+          <div className="day-grid">
+            {overflow.prev.map((d, index) => (
+              <span
+                onClick={() => {
                   const draftDate = new Date(date)
                   draftDate.setDate(d)
+                  draftDate.setMonth(date.getMonth() - 1)
+                  setDate(draftDate)
                   setSelectedDate(draftDate)
-                }
-
-              }} key={index} className={Number(d) === selectedDate.getDate() ? 'today' : ''}>
+                }}
+                key={index}
+                className={` out-of-bounds`}>
                 {d}
               </span>
+            ))}
+            {days.map((day, index) => {
+              const isSelectedDate = checkDaySelected(day)
+              const isWithinRange = checkWithinRange(day)
+              return (
+                <span
+                  onClick={() => {
+                    const draftDate = new Date(date)
+                    draftDate.setDate(day)
+                    setDate(draftDate)
+                    setSelectedDate(draftDate)
+                  }}
+                  key={index}
+                  className={`${isSelectedDate ? 'today' : ''}`}
+                >
+                  {day}
+                </span>
+              )
+            }
             )}
-          )}
+            {overflow.next.map((d, index) => (
+              <span
+                key={index}
+                className={`out-of-bounds`}
+                onClick={() => {
+                  const draftDate = new Date(date)
+                  draftDate.setDate(d)
+                  draftDate.setMonth(date.getMonth() + 1)
+                  setDate(draftDate)
+                  setSelectedDate(draftDate)
+                }}
+              >
+                {d}
+              </span>
+            ))}
+          </div>
         </div>
-        <button
-          onClick={e => {
-            const newDate = new Date(today)
-            newDate.setMonth(newDate.getMonth() - 1)
-            setDate(newDate)
-          }}
-        >
-          {'<-'}
+      </div>
+      <div className="controls-container">
+        <button onClick={setPreviousYear}>
+          {'<<'}
         </button>
-        <button
-          onClick={e => {
-            const newDate = new Date(today)
-            newDate.setMonth(newDate.getMonth() + 1)
-            console.log(newDate)
-            setDate(newDate)
-          }}
-        >
-          {'->'}
+        <button onClick={setPreviousMonth}>
+          {'<'}
+        </button>
+        <button onClick={setToday}>Today</button>
+        <button onClick={setNextMonth}>
+          {'>'}
+        </button>
+        <button onClick={setNextYear}>
+          {'>>'}
         </button>
       </div>
-      <Debug firstDayOfMonth={firstDayOfMonth} firstWeekdayOfMonth={weekdays[firstDayOfMonth].label} />
     </React.Fragment>
   )
 }
@@ -99,9 +199,9 @@ function App() {
       <header className="App-header">
         <h2>Playground</h2>
       </header>
-      <Mainspring>
+      <Daystream>
         {Calendar}
-      </Mainspring>
+      </Daystream>
     </React.Fragment>
   );
 }

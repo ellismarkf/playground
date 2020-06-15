@@ -28,6 +28,10 @@
   width: 148px;
 }
 
+.months-container {
+  display: flex;
+}
+
 .day-grid {
   border-right: 1px solid;
   border-bottom: 1px solid;
@@ -38,8 +42,8 @@
 .day-grid span {
   width: 20px;
   height: 20px;
-  border-top: 1px solid;
-  border-left: 1px solid;
+  border-top: 1px solid black;
+  border-left: 1px solid black;
   display: inline-flex;
   justify-content: center;
   align-items: center;
@@ -52,6 +56,12 @@
 
 .today {
   font-weight: bold;
+  color: white;
+  background-color: blue;
+}
+
+.out-of-bounds {
+  color: lightgrey;
 }
 
 @keyframes App-logo-spin {
